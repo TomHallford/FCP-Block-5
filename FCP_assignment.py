@@ -97,25 +97,37 @@ class Network:
                     if node_check == end_index:
                         break
                     neighbour_index = [i for i, n in enumerate(self.nodes[node_check].connections) if n ==1]
-                    for neighbour in neighbour_index:
-                        if neighbour not in visited:
-                            queue.push(neighbour)
-                            visited.append(node_check)
-                            self.nodes[neighbour].parent=node_check
-                        if neighbour == end_index:
-                            self.nodes[neighbour].parent=node_check
-                            queue=Queue()
-                            break
+                    if neighbour_index == []:
+                        break
+                    else:
+                        for neighbour in neighbour_index:
+                            if neighbour not in visited:
+                                queue.push(neighbour)
+                                visited.append(node_check)
+                                self.nodes[neighbour].parent=node_check
+                            if neighbour == end_index:
+                                self.nodes[neighbour].parent=node_check
+                                queue=Queue()
+                                break
                         
                 check = self.nodes[end_index]
                 self.nodes[start_index].parent=None
                 rought = []
                 while check.parent != None:
                     rought.append(check.index)
+                    temp = check
                     check=self.nodes[check.parent]
+                    temp.parent=None
+                print("R:",rought,"S:",start_index,"E:",end_index)
+                if rought == []:
+                    continue
                 path_length_per_node.append(len(rought))
-            
-            mean_path_lenght_pn.append(sum(path_length_per_node)/len(path_length_per_node))
+            if len(path_length_per_node)==0:
+                mean_path_lenght_pn.append(0.0)
+                print("0 Length")
+            else:
+                mean_path_lenght_pn.append(sum(path_length_per_node)/len(path_length_per_node))
+                print("T_length",sum(path_length_per_node),"num of nodes",len(path_length_per_node))
         print(mean_path_lenght_pn)
         mean_path_length=sum(mean_path_lenght_pn)/nodes_num
             
@@ -138,6 +150,8 @@ class Network:
                 if np.random.random() < connection_probability:
                     node.connections[neighbour_index] = 1
                     self.nodes[neighbour_index].connections[index] = 1
+        for node in self.nodes:
+            print(node.index,node.connections)
             
             
     def make_ring_network(self, N, neighbour_range=1):
@@ -353,7 +367,7 @@ def main():
     if args.network:
         net=Network()
         print(args.network)
-        net.make_random_network(args.network,0.4)
+        net.make_random_network(args.network,0.3)
         print("Mean degree:",net.get_mean_degree())
         print("Mean path length:",net.get_mean_path_length())
         print("Mean clustering co-efficient:",net.get_mean_clustering())
