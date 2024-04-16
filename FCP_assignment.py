@@ -8,6 +8,7 @@ class Node:
         self.index = number
         self.connections = connections
         self.value = value
+        self.parent =None
 
 class Queue:
     def __init__(self):
@@ -77,10 +78,14 @@ class Network:
         '''
         #Your code for task 3 goes here
         print("path length")
+        mean_path_lenght_pn=[]
         for node in self.nodes:
             start_index = node.index
             neigh = node.connections
             nodes_num = len(neigh)
+            
+            path_length_per_node =[]
+            
             for end_index in range(0,nodes_num):
                 if start_index == end_index:
                     continue
@@ -92,11 +97,24 @@ class Network:
                     if node_check == end_index:
                         break
                     neighbour_index = [i for i, n in enumerate(self.nodes[node_check].connections) if n ==1]
-                    visited.append(node_check)
                     for neighbour in neighbour_index:
                         if neighbour not in visited:
                             queue.push(neighbour)
-                    print(visited)
+                            visited.append(node_check)
+                            self.nodes[neighbour].parent=node_check
+                            
+                check = self.nodes[end_index]
+                self.nodes[start_index].parent=None
+                rought = []
+                while check.parent != None:
+                    rought.append(check.index)
+                    check=self.nodes[check.parent]
+                path_length_per_node.append(len(rought))
+            
+            mean_path_lenght_pn.append(sum(path_length_per_node)/len(path_length_per_node))
+            mean_path_length=sum(mean_path_lenght_pn)/len(mean_path_lenght_pn)
+            
+            return round(mean_path_length,15)
                         
                 
 
@@ -329,17 +347,7 @@ This section contains code for the main function- you should write some code for
 
 def main():
 	#You should write some code for handling flags here
-    '''
-    stuff i am useing for testing task 3, do not touch
     
-    -Tyler
     
-    test_networks()
-    net=Network()
-    net.make_random_network(10,0.3)
-    net.plot()
-    net.get_clustering()
-    plt.show()
-    '''
 if __name__=="__main__":
 	main()
