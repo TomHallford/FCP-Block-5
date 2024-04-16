@@ -9,6 +9,21 @@ class Node:
         self.connections = connections
         self.value = value
 
+class Queue:
+    def __init__(self):
+        self.queue = []
+    
+    def push(self,value):
+        self.queue.append(value)
+    
+    def pop(self):
+        if len(self.queue)<1:
+            return None
+        return self.queue.pop(0)
+    
+    def is_empty(self):
+        return len(self.queue)==0
+    
 class Network:
     
     def __init__(self, nodes=None):
@@ -51,9 +66,45 @@ class Network:
         num_nodes = self.nodes[-1].index + 1
         return float(sum(clustering_co)/num_nodes)
 
+
+
+
+
+
     def get_mean_path_length(self):
-        print("mean")
+        '''
+        not done yet
+        '''
         #Your code for task 3 goes here
+        print("path length")
+        for node in self.nodes:
+            start_index = node.index
+            neigh = node.connections
+            nodes_num = len(neigh)
+            for end_index in range(0,nodes_num):
+                if start_index == end_index:
+                    continue
+                queue = Queue()
+                queue.push(start_index)
+                visited = []
+                while not queue.is_empty():
+                    node_check = queue.pop()
+                    if node_check == end_index:
+                        break
+                    neighbour_index = [i for i, n in enumerate(self.nodes[node_check].connections) if n ==1]
+                    visited.append(node_check)
+                    for neighbour in neighbour_index:
+                        if neighbour not in visited:
+                            queue.push(neighbour)
+                    print(visited)
+                        
+                
+
+
+
+
+
+
 
     def make_random_network(self, N, connection_probability):
         '''
@@ -125,7 +176,7 @@ def test_networks():
     print("Testing ring network")
     assert(network.get_mean_degree()==2), network.get_mean_degree()
     assert(network.get_mean_clustering()==0), network.get_mean_clustering()
-    #assert(network.get_path_length()==2.777777777777778), network.get_path_length()
+    assert(network.get_mean_path_length()==2.777777777777778), network.get_mean_path_length()
 
     nodes = []
     num_nodes = 10
@@ -278,13 +329,17 @@ This section contains code for the main function- you should write some code for
 
 def main():
 	#You should write some code for handling flags here
+    '''
+    stuff i am useing for testing task 3, do not touch
+    
+    -Tyler
     
     test_networks()
-    #net=Network()
-    #net.make_random_network(10,0.3)
-    #net.plot()
-    #net.get_clustering()
-    #plt.show()
-
+    net=Network()
+    net.make_random_network(10,0.3)
+    net.plot()
+    net.get_clustering()
+    plt.show()
+    '''
 if __name__=="__main__":
 	main()
