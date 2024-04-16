@@ -1,4 +1,5 @@
 import numpy as np
+import argparse
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
@@ -77,7 +78,6 @@ class Network:
         not done yet
         '''
         #Your code for task 3 goes here
-        print("path length")
         mean_path_lenght_pn=[]
         for node in self.nodes:
             start_index = node.index
@@ -102,7 +102,11 @@ class Network:
                             queue.push(neighbour)
                             visited.append(node_check)
                             self.nodes[neighbour].parent=node_check
-                            
+                        if neighbour == end_index:
+                            self.nodes[neighbour].parent=node_check
+                            queue=Queue()
+                            break
+                        
                 check = self.nodes[end_index]
                 self.nodes[start_index].parent=None
                 rought = []
@@ -112,18 +116,11 @@ class Network:
                 path_length_per_node.append(len(rought))
             
             mean_path_lenght_pn.append(sum(path_length_per_node)/len(path_length_per_node))
-            mean_path_length=sum(mean_path_lenght_pn)/len(mean_path_lenght_pn)
+        print(mean_path_lenght_pn)
+        mean_path_length=sum(mean_path_lenght_pn)/nodes_num
             
-            return round(mean_path_length,15)
+        return round(mean_path_length,15)
                         
-                
-
-
-
-
-
-
-
     def make_random_network(self, N, connection_probability):
         '''
         This function makes a *random* network of size N.
@@ -141,8 +138,8 @@ class Network:
                 if np.random.random() < connection_probability:
                     node.connections[neighbour_index] = 1
                     self.nodes[neighbour_index].connections[index] = 1
-        for node in self.nodes:
-            print(node.index,node.connections)
+            
+            
     def make_ring_network(self, N, neighbour_range=1):
         print("mean")
         #Your code  for task 4 goes here
@@ -208,7 +205,7 @@ def test_networks():
     print("Testing one-sided network")
     assert(network.get_mean_degree()==1), network.get_mean_degree()
     assert(network.get_mean_clustering()==0),  network.get_mean_clustering()
-    #assert(network.get_path_length()==5), network.get_path_length()
+    assert(network.get_mean_path_length()==5), network.get_mean_path_length()
 
     nodes = []
     num_nodes = 10
@@ -222,7 +219,7 @@ def test_networks():
     print("Testing fully connected network")
     assert(network.get_mean_degree()==num_nodes-1), network.get_mean_degree()
     assert(network.get_mean_clustering()==1),  network.get_mean_clustering()
-    #assert(network.get_path_length()==1), network.get_path_length()
+    assert(network.get_mean_path_length()==1), network.get_mean_path_length()
 
     print("All tests passed")
 
@@ -347,7 +344,24 @@ This section contains code for the main function- you should write some code for
 
 def main():
 	#You should write some code for handling flags here
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-network",action="store",type=int,default=False)
+    parser.add_argument("-test_network",action="store_true",default=False)
     
+    args=parser.parse_args()
     
+    if args.network:
+        net=Network()
+        print(args.network)
+        net.make_random_network(args.network,0.4)
+        print("Mean degree:",net.get_mean_degree())
+        print("Mean path length:",net.get_mean_path_length())
+        print("Mean clustering co-efficient:",net.get_mean_clustering())
+        net.plot()
+        plt.show()
+    if args.test_network:
+        test_networks()
+        
+        
 if __name__=="__main__":
 	main()
