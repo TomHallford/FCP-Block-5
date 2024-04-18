@@ -68,11 +68,6 @@ class Network:
         num_nodes = self.nodes[-1].index + 1
         return float(sum(clustering_co)/num_nodes)
 
-
-
-
-
-
     def get_mean_path_length(self):
         '''
         not done yet
@@ -118,17 +113,13 @@ class Network:
                     temp = check
                     check=self.nodes[check.parent]
                     temp.parent=None
-                print("R:",rought,"S:",start_index,"E:",end_index)
                 if rought == []:
                     continue
                 path_length_per_node.append(len(rought))
             if len(path_length_per_node)==0:
                 mean_path_lenght_pn.append(0.0)
-                print("0 Length")
             else:
                 mean_path_lenght_pn.append(sum(path_length_per_node)/len(path_length_per_node))
-                print("T_length",sum(path_length_per_node),"num of nodes",len(path_length_per_node))
-        print(mean_path_lenght_pn)
         mean_path_length=sum(mean_path_lenght_pn)/nodes_num
             
         return round(mean_path_length,15)
