@@ -36,6 +36,12 @@ class Network:
 
     def get_mean_degree(self):
         #Your code  for task 3 goes here
+        '''
+        Function for calulating the mean degree of a network
+        - sums the number of neighbours each node has
+        - find the total number of nodes in the network
+        - retirns the value produced by the deviding the two previous values 
+        '''
         total =0
         for node in self.nodes:
             total += node.connections.count(1)
@@ -45,6 +51,14 @@ class Network:
     
     def get_mean_clustering(self):
         #Your code for task 3 goes here
+        '''
+        Functions for finding the mean clustering in a network
+        -checks each node for the number of neighbours, if it has less then 2 it will move onto the next node
+        -perfomrs calulations for the maxium possible triablges formed by the node and it's connections
+        -checks if two connected nodes have a common neghibour, if they do increase the triangle count by 1
+        - for a given node devide the total numebr of triangles by the number of possible triangles
+        -return the sum the mean clustering for each node devied by the toal number of nodes 
+        '''
         clustering_co = []
         for (index_l, node) in enumerate(self.nodes):
             neighbours = node.connections.count(1)
@@ -70,6 +84,14 @@ class Network:
 
     def get_mean_path_length(self):
         #Your code for task 3 goes here
+        '''
+        function for finding the mean path length for the entire network
+        -for each node finds the shortest rought to each other node in the network
+        -sums the result and devides the total by the number of nodes that contriute to the toal
+        -repeasts for each node and adds the result of each to a total
+        -devides the total by the number of nodes in the network
+        -returns the result of this
+        '''
         mean_path_lenght_pn=[]
         for node in self.nodes:
             start_index = node.index
@@ -81,6 +103,8 @@ class Network:
             for end_index in range(0,nodes_num):
                 if start_index == end_index:
                     continue
+                # search to find the shortest path length
+                
                 queue = Queue()
                 queue.push(start_index)
                 visited = []
@@ -109,17 +133,19 @@ class Network:
                     rought.append(check.index)
                     temp = check
                     check=self.nodes[check.parent]
-                    temp.parent=None
+                    temp.parent=None								# prevents overflow between nodes
                 if rought == []:
                     continue
                 path_length_per_node.append(len(rought))
+                
+                
             if len(path_length_per_node)==0:
-                mean_path_lenght_pn.append(0.0)
+                mean_path_lenght_pn.append(0.0)     # prevents nodes with 0 connecitons haveing a path length of 1
             else:
                 mean_path_lenght_pn.append(sum(path_length_per_node)/len(path_length_per_node))
         mean_path_length=sum(mean_path_lenght_pn)/nodes_num
             
-        return round(mean_path_length,15)
+        return round(mean_path_length,15)				#needed to past test as the number producded has 16 dp
                         
     def make_random_network(self, N, connection_probability):
         '''
