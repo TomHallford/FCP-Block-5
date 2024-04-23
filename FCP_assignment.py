@@ -2,7 +2,10 @@ import numpy as np
 import argparse
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import random
 import math
+
+
 class Node:
 
     def __init__(self, value, number, connections=None):
@@ -10,6 +13,7 @@ class Node:
         self.connections = connections
         self.value = value
         self.parent =None
+
 
 class Queue:
     def __init__(self):
@@ -25,7 +29,8 @@ class Queue:
     
     def is_empty(self):
         return len(self.queue)==0
-    
+
+
 class Network:
     
     def __init__(self, nodes=None):
@@ -48,7 +53,7 @@ class Network:
         num_nodes = self.nodes[-1].index + 1
         
         return total/num_nodes
-    
+
     def get_mean_clustering(self):
         #Your code for task 3 goes here
         '''
@@ -203,6 +208,7 @@ class Network:
 
                     ax.plot((node_x, neighbour_x), (node_y, neighbour_y), color='black')
 
+
 def test_networks():
 
     #Ring network
@@ -267,6 +273,7 @@ probability_option = 0.5
 population = np.random.choice([agree, disagree], size = [population_size,population_size],
                               p=(probability_option, 1-probability_option))
 
+
 # Di_math function, row and col controls the opinion of original guy
 def calculate_agreement(population, row, col, external=0.0):
     size = len(population)
@@ -278,6 +285,7 @@ def calculate_agreement(population, row, col, external=0.0):
     (external * population[row,col]))
 
     return agreement
+
 # renew the ising model. Shows how External and alpha affect the Di/agreement value.
 def ising_step(population, alpha, external): # three input arguments control the p and agreement math function
     '''
@@ -380,13 +388,114 @@ This section contains code for the Defuant Model - task 2 in the assignment
 ==============================================================================================================
 '''
 
-def defuant_main():
-    print("mean")
-	#Your code for task 2 goes here
+
+def defuant_model_calc(x, T, beta):
+
+    """
+    calculates the 2 new opinions based of each other
+
+    :param x: a length 2 list of neighbours opinions, where x[0] is xi and x[1] is xj
+    :param T: is the threshold constant for which the opinions need to be close enough to, to change
+    :param beta: how much an opinion updates if it is close enough to another
+    :return: 2 variables of which are the new opinions
+    """
+
+    if abs(x[0] - x[1]) < T:
+        xi = x[0]
+        xj = x[1]
+        x[0] = xi + (beta*(xj - xi))
+        x[1] = xj + (beta*(xi - xj))
+
+    return x[0], x[1]
+
+
+def new_iteration(neighbour_list, T, beta):
+
+    """
+    iterates through the list of neighbour opinions, creating the next set of opinions
+
+    :param neighbour_list: list containing the opinions of the neighbours
+    :param T: (passed into defuant calc)
+    :param beta: (passed into defuant calc)
+    :return:
+    """
+
+    for i in range(0, len(neighbour_list)):
+
+        # needs to handle the scenario of the neighbour being at the ends of the list
+        if i == 0:
+            r_n = 1
+        elif i == (len(neighbour_list) - 1):
+            r_n = -1
+        else:
+            r_n = random_neighbour()
+
+        x = [neighbour_list[i], neighbour_list[i + r_n]]
+        x = defuant_model_calc(x, T, beta)
+        neighbour_list[i] = x[0]
+        neighbour_list[i + r_n] = x[1]
+
+    return neighbour_list
+
+
+def opinion_mapping(time_step, neighbour_list, T, beta):
+
+    """
+    iterates through the time steps creating new opinions then plotting them, at the end it shows the scatter
+    graph and a histogram of the opinions
+
+    :param time_step: how many times the neighbour opinions are going to be iterated through
+    :param neighbour_list: list of neighbour opinions
+    :param T: (passed for defuant calc)
+    :param beta: (passed for defuant calc)
+    :return: doesn't explicitly return anything but plots the graphs needed
+    """
+
+    fig, (lax, rax) = plt.subplots(1, 2)
+
+    # plotting the scatter graph and then creating the histogram
+    for i in range(0, time_step + 1):
+        rax.scatter([i] * len(neighbour_list), neighbour_list, color="red")
+        new_iteration(neighbour_list, T, beta)
+    lax.hist(neighbour_list)
+
+    # detailing the graphs
+    fig.suptitle("coupling: " + str(beta) + "  threshold: " + str(T))
+    lax.set_xlabel("opinion")
+    rax.set_xlabel("time step")
+    rax.set_ylabel("opinion")
+
+    plt.show()
+
+
+def neighbour_create(n):
+
+    """
+    using list comprehension it creates a list of random opinions of length n
+
+    :param n: specifies the length of neighbour opinions
+    :return: a list of random values ranging between 0 and 1
+    """
+    neighbour_list = [random.random() for i in range(n)]
+    return neighbour_list
+
+
+def random_neighbour():
+    """generates a random number to choose a random neighbour"""
+    return random.choice([-1, 1])
+
+
+def defuant_main(T, beta, N, time_step):
+    """creates the neighbour list using the passed values"""
+    neighbour_list = neighbour_create(N)
+    opinion_mapping(time_step, neighbour_list, T, beta)
+
 
 def test_defuant():
-    print("mean")
-	#Your code for task 2 goes here
+    """tests the maths of the defuant model"""
+    assert 0.420001 > defuant_model_calc([0.4, 0.5], 0.2, 0.2)[0] > 0.41999, "xi defuant model calc fail"
+    assert 0.480001 > defuant_model_calc([0.4, 0.5], 0.2, 0.2)[1] > 0.47999, "xj defuant model calc fail"
+    print("passes calc")
 
 
 '''
@@ -395,17 +504,26 @@ This section contains code for the main function- you should write some code for
 ==============================================================================================================
 '''
 
+
 def main():
-	#You should write some code for handling flags here
+	# You should write some code for handling flags here
     parser = argparse.ArgumentParser(description='process the users_s input ')
     parser.add_argument("-network",action="store",type=int,default=False)
     parser.add_argument("-test_network",action="store_true",default=False)
 
-    #adding four command-line parameter
+    # adding four command-line parameter
     parser.add_argument('-ising_model', action='store_true')
     parser.add_argument('-test_ising', action='store_true')
     parser.add_argument('-external', type=float, default=0.0)
     parser.add_argument('-alpha', type=float, default=1.0)
+
+    # flags for the defuant model
+    parser.add_argument("-defuant", action="store_true", default=False)
+    parser.add_argument("-threshold", type=float, default=0.2)
+    parser.add_argument("-beta", type=float, default=0.2)
+    parser.add_argument("-n_count", type=int, default=100)
+    parser.add_argument("-time_step", type=int, default=100)
+    parser.add_argument("-test_defuant", action="store_true", default=False)
 
     args=parser.parse_args()
     
@@ -421,12 +539,17 @@ def main():
     if args.test_network:
         test_networks()
 
-        # if the user enter the ising_model or test_ising, running these two funtions
+    if args.defuant:
+        defuant_main(args.threshold, args.beta, args.n_count, args.time_step)
+    if args.test_defuant:
+        test_defuant()
+
+    # if the user enter the ising_model or test_ising, running these two funtions
     if args.ising_model:
         ising_main(population, alpha=args.alpha, external=args.external)
-
     if args.test_ising:
         test_ising()
+
         
 if __name__=="__main__":
 	main()
