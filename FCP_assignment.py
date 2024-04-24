@@ -420,6 +420,7 @@ def new_iteration(neighbour_list, T, beta):
     :return:
     """
 
+    # iterates through the list
     for i in range(0, len(neighbour_list)):
 
         # needs to handle the scenario of the neighbour being at the ends of the list
@@ -430,6 +431,7 @@ def new_iteration(neighbour_list, T, beta):
         else:
             r_n = random_neighbour()
 
+        # updates the values of the list
         x = [neighbour_list[i], neighbour_list[i + r_n]]
         x = defuant_model_calc(x, T, beta)
         neighbour_list[i] = x[0]
@@ -492,10 +494,35 @@ def defuant_main(T, beta, N, time_step):
 
 
 def test_defuant():
-    """tests the maths of the defuant model"""
-    assert 0.420001 > defuant_model_calc([0.4, 0.5], 0.2, 0.2)[0] > 0.41999, "xi defuant model calc fail"
-    assert 0.480001 > defuant_model_calc([0.4, 0.5], 0.2, 0.2)[1] > 0.47999, "xj defuant model calc fail"
-    print("passes calc")
+    # opinion case where their difference is below the threshold, x = [0.4, 0.5]
+    assert 0.42001 > defuant_model_calc([0.4, 0.5], 0.2, 0.2)[0] > 0.41999, "xi defuant model calc fail"
+    assert 0.48001 > defuant_model_calc([0.4, 0.5], 0.2, 0.2)[1] > 0.47999, "xj defuant model calc fail"
+    print("passed calc")
+
+    # opinion case where their difference is above the threshold, x = [0.2, 0.8]
+    assert defuant_model_calc([0.2, 0.8], 0.2, 0.2)[0] == 0.2, "xi threshold comparison fail"
+    assert defuant_model_calc([0.2, 0.8], 0.2, 0.2)[1] == 0.8, "xj threshold comparison fail"
+    print("passed threshold comparison")
+
+    # correctly passes one iteration with both cases of the opinions being in an out of threshold range
+    assert 0.43201 > new_iteration([0.4, 0.5], 0.2, 0.2)[0] > 0.43199, "xi iteration fail"
+    assert 0.46800 > new_iteration([0.4, 0.5], 0.2, 0.2)[1] > 0.46799, "xj iteration fail"
+    # to note, the values of the xi/xj iteration check is different due to the calculations occur twice
+    assert new_iteration([0.2, 0.8], 0.2, 0.2)[0] == 0.2, "xi threshold iteration fail"
+    assert new_iteration([0.2, 0.8], 0.2, 0.2)[1] == 0.8, "xj threshold iteration fail"
+    print("passed iteration")
+
+    # checks neighbour random generation
+    for i in range(10):
+        rand_neigh = random_neighbour()
+        assert rand_neigh == 1 or rand_neigh == -1, "random neighbour fail"
+    print("passed random neighbour")
+
+    # checks that opinions range between 0 and 1
+    list_of_rand_opinions = neighbour_create(100)
+    for i in range(100):
+        assert 1 >= list_of_rand_opinions[i] >= 0, "opinion out of range"
+    print("passed opinion check")
 
 
 '''
@@ -506,7 +533,7 @@ This section contains code for the main function- you should write some code for
 
 
 def main():
-	# You should write some code for handling flags here
+    # You should write some code for handling flags here
     parser = argparse.ArgumentParser(description='process the users_s input ')
     parser.add_argument("-network",action="store",type=int,default=False)
     parser.add_argument("-test_network",action="store_true",default=False)
@@ -552,4 +579,4 @@ def main():
 
         
 if __name__=="__main__":
-	main()
+    main()
