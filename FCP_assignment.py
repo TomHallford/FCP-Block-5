@@ -160,7 +160,7 @@ class Network:
 
         self.nodes = []
         for node_number in range(N):
-            value = np.random.random()
+            value = np.random.choice([1,-1],p=(0.5,0.5))
             connections = [0 for _ in range(N)]
             self.nodes.append(Node(value, node_number, connections))
 
@@ -169,8 +169,6 @@ class Network:
                 if np.random.random() < connection_probability:
                     node.connections[neighbour_index] = 1
                     self.nodes[neighbour_index].connections[index] = 1
-        for node in self.nodes:
-            print(node.index,node.connections)
             
             
     def make_ring_network(self, N, neighbour_range=1):
@@ -181,12 +179,29 @@ class Network:
         print("mean")
         #Your code for task 4 goes here
 
-    def plot(self):
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.set_axis_off()
-
+    def ising_update(self,alpha):
+        '''
+        function for updating a single node in the ising_network
+        '''
+        random_index=random.randint(0,len(self.nodes)-1)
+        node = self.nodes[random_index]
+        
+        neighbour_index_list=[i for (i,n) in enumerate(node.connections) if n == 1]
+        agreement = 0
+        for neighbour_index in neighbour_index_list:
+            agreement += node.value * self.nodes[neighbour_index].value
+        
+        if agreement <= 0:
+            node.value *= -1
+        elif agreement >0:
+            p = math.e ** (-agreement / alpha)
+            node.value = np.random.choice([node.value,node.value*-1],p=(1-p,p))
+        
+    def plot(self,ax=False):
+        if not ax:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.set_axis_off()
         num_nodes = len(self.nodes)
         network_radius = num_nodes * 10
         ax.set_xlim([-1.1*network_radius, 1.1*network_radius])
@@ -197,7 +212,7 @@ class Network:
             node_x = network_radius * np.cos(node_angle)
             node_y = network_radius * np.sin(node_angle)
 
-            circle = plt.Circle((node_x, node_y), 0.3*num_nodes, color=cm.hot(node.value))
+            circle = plt.Circle((node_x, node_y), 0.3*num_nodes, color=cm.Set1(node.value))
             ax.add_patch(circle)
 
             for neighbour_index in range(i+1, num_nodes):
@@ -535,6 +550,8 @@ This section contains code for the main function- you should write some code for
 def main():
     # You should write some code for handling flags here
     parser = argparse.ArgumentParser(description='process the users_s input ')
+    
+    # flags for task_3 Network
     parser.add_argument("-network",action="store",type=int,default=False)
     parser.add_argument("-test_network",action="store_true",default=False)
 
@@ -552,7 +569,7 @@ def main():
     parser.add_argument("-time_step", type=int, default=100)
     parser.add_argument("-test_defuant", action="store_true", default=False)
 
-    #task 5
+    # flag for task_5
     parser.add_argument("-use_network", action="store",type=int, default=False)
     
     args=parser.parse_args()
@@ -576,11 +593,20 @@ def main():
 
     # if the user enter the ising_model or test_ising, running these two funtions
     if args.ising_model:
+        #checks if ths ising_model is using a network or grid for representation
         if args.use_network:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.set_axis_off()
+            plt.ion()
             ising_network = Network()
             ising_network.make_random_network(args.use_network, 0.5)
-            ising_network.plot
+            ising_network.plot(ax)
             plt.pause(0.1)
+            for i in range(100):
+                ising_network.ising_update(args.alpha)
+                ising_network.plot(ax)
+                plt.pause(0.1)
             
         else:
             ising_main(population, alpha=args.alpha, external=args.external)
