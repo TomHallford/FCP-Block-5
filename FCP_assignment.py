@@ -290,9 +290,9 @@ This section contains code for the Ising Model - task 1 in the assignment
 agree = 1
 disagree = -1
 population_size = 100
-probability_option = 0.5
+probability_opinion  = 0.5
 population = np.random.choice([agree, disagree], size = [population_size,population_size],
-                              p=(probability_option, 1-probability_option))
+                              p=(probability_opinion , 1-probability_opinion ))
 
 
 # Di_math function, row and col controls the opinion of original guy
@@ -336,6 +336,7 @@ def ising_step(population, alpha, external):  # three input arguments control th
     return population
 
 
+
 def plot_ising(im, population):
 
     '''
@@ -346,9 +347,41 @@ def plot_ising(im, population):
     im.set_data(new_im)
     plt.pause(0.1)
 
+def test_ising(): # This function will test the calculate_agreement function in the Ising model
+
+
+    print("Testing ising model calculations")
+    population = -np.ones((3, 3))
+    assert(calculate_agreement(population,1,1)==4), "Test 1"
+
+    population[1, 1] = 1.
+    assert(calculate_agreement(population,1,1)==-4), "Test 2"
+
+    population[0, 1] = 1.
+    assert(calculate_agreement(population,1,1)==-2), "Test 3"
+
+    population[1, 0] = 1.
+    assert(calculate_agreement(population,1,1)==0), "Test 4"
+
+    population[2, 1] = 1.
+    assert(calculate_agreement(population,1,1)==2), "Test 5"
+
+    population[1, 2] = 1.
+    assert(calculate_agreement(population,1,1)==4), "Test 6"
+
+    "Testing external pull"
+    population = -np.ones((3, 3))
+    assert(calculate_agreement(population,1,1,1)==3), "Test 7"
+    assert(calculate_agreement(population,1,1,-1)==5), "Test 8"
+    assert(calculate_agreement(population,1,1,10)==-6), "Test 9"
+    assert(calculate_agreement(population,1,1,-10)==14), "Test 10"
+
+    print("Tests passed")
+
 
 # if the user does not set the alpha and external value, these will be assigned the input arguments
 def ising_main(population, alpha=None, external=0.0):
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.set_axis_off()
@@ -363,51 +396,6 @@ def ising_main(population, alpha=None, external=0.0):
         plot_ising(im, population)
 
 
-def test_ising(): # This function will test the calculate_agreement function in the Ising model
-
-    print("Testing ising model calculations")
-    population = -np.ones((3, 3))
-    assert(calculate_agreement(population, 1, 1) == 4), "Test 1"
-
-    population[1, 1] = 1.
-    assert(calculate_agreement(population, 1, 1) == -4), "Test 2"
-
-    population[0, 1] = 1.
-    assert(calculate_agreement(population, 1, 1) == -2), "Test 3"
-
-    population[1, 0] = 1.
-    assert(calculate_agreement(population, 1, 1) == 0), "Test 4"
-
-    population[2, 1] = 1.
-    assert(calculate_agreement(population, 1, 1) == 2), "Test 5"
-
-    population[1, 2] = 1.
-    assert(calculate_agreement(population, 1, 1) == 4), "Test 6"
-
-    "Testing external pull"
-    population = -np.ones((3, 3))
-    assert(calculate_agreement(population, 1, 1, 1) == 3), "Test 7"
-    assert(calculate_agreement(population, 1, 1, -1) == 5), "Test 8"
-    assert(calculate_agreement(population, 1, 1, 10) == -6), "Test 9"
-    assert(calculate_agreement(population, 1, 1, -10) == 14), "Test 10"
-
-    print("Tests passed")
-
-
-def ising_main(population, alpha=None, external=0.0):
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.set_axis_off()
-    im = ax.imshow(population, interpolation='none', cmap='RdPu_r')
-
-    # Iterating an update 100 times
-    for frame in range(100):
-        # Iterating single steps 1000 times to form an update
-        for step in range(1000):
-            ising_step(population,alpha, external)
-        print('Step:', frame, end='\r')
-        plot_ising(im, population)
 
 
 '''
