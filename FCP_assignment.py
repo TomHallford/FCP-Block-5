@@ -40,14 +40,15 @@ class Network:
             self.nodes = nodes 
 
     def get_mean_degree(self):
-        #Your code  for task 3 goes here
+
         '''
-        Function for calulating the mean degree of a network
+        Function for calculating the mean degree of a network
         - sums the number of neighbours each node has
         - find the total number of nodes in the network
-        - retirns the value produced by the deviding the two previous values 
+        - returns the value produced by the dividing the two previous values
         '''
-        total =0
+
+        total = 0
         for node in self.nodes:
             total += node.connections.count(1)
         num_nodes = self.nodes[-1].index + 1
@@ -55,15 +56,16 @@ class Network:
         return total/num_nodes
 
     def get_mean_clustering(self):
-        #Your code for task 3 goes here
+
         '''
         Functions for finding the mean clustering in a network
-        -checks each node for the number of neighbours, if it has less then 2 it will move onto the next node
-        -perfomrs calulations for the maxium possible triablges formed by the node and it's connections
-        -checks if two connected nodes have a common neghibour, if they do increase the triangle count by 1
-        - for a given node devide the total numebr of triangles by the number of possible triangles
-        -return the sum the mean clustering for each node devied by the toal number of nodes 
+        -checks each node for the number of neighbours, if it has less than 2 it will move onto the next node
+        -performs calculations for the maximum possible triangles formed by the node and it's connections
+        -checks if two connected nodes have a common neighbour, if they do increase the triangle count by 1
+        - for a given node divide the total number of triangles by the number of possible triangles
+        -return the sum the mean clustering for each node divided by the total number of nodes
         '''
+
         clustering_co = []
         for (index_l, node) in enumerate(self.nodes):
             neighbours = node.connections.count(1)
@@ -71,41 +73,42 @@ class Network:
             if possible_triangles == 0:
                 continue
             temp_connections = []
-            for (index_temp,connection) in enumerate(node.connections):
-                if connection ==1:
+            for (index_temp, connection) in enumerate(node.connections):
+                if connection == 1:
                     temp_connections.append(index_temp)
-            connections= [i for i in temp_connections]      # Don't change this line, only solution that i found works 
+            connections = [i for i in temp_connections]      # Don't change this line, only solution that I found works
             total = 0
             for counting in connections:
-                index_m= temp_connections.pop(0)
+                index_m = temp_connections.pop(0)
                 for index_h in temp_connections:
                     m_connection = self.nodes[index_m].connections
-                    if m_connection[index_l]==1 and m_connection[index_h] ==1:
-                        total+=1
+                    if m_connection[index_l] == 1 and m_connection[index_h] == 1:
+                        total += 1
             clustering_co.append(total/possible_triangles)
                         
         num_nodes = self.nodes[-1].index + 1
         return float(sum(clustering_co)/num_nodes)
 
     def get_mean_path_length(self):
-        #Your code for task 3 goes here
+
         '''
         function for finding the mean path length for the entire network
-        -for each node finds the shortest rought to each other node in the network
-        -sums the result and devides the total by the number of nodes that contriute to the toal
-        -repeasts for each node and adds the result of each to a total
-        -devides the total by the number of nodes in the network
+        -for each node finds the shortest root to each other node in the network
+        -sums the result and divides the total by the number of nodes that contribute to the total
+        -repeats for each node and adds the result of each to a total
+        -divides the total by the number of nodes in the network
         -returns the result of this
         '''
-        mean_path_lenght_pn=[]
+
+        mean_path_lenght_pn = []
         for node in self.nodes:
             start_index = node.index
             neigh = node.connections
             nodes_num = len(neigh)
             
-            path_length_per_node =[]
+            path_length_per_node = []
             
-            for end_index in range(0,nodes_num):
+            for end_index in range(0, nodes_num):
                 if start_index == end_index:
                     continue
                 # search to find the shortest path length
@@ -144,15 +147,16 @@ class Network:
                 path_length_per_node.append(len(rought))
                 
                 
-            if len(path_length_per_node)==0:
-                mean_path_lenght_pn.append(0.0)     # prevents nodes with 0 connecitons haveing a path length of 1
+            if len(path_length_per_node) == 0:
+                mean_path_lenght_pn.append(0.0)     # prevents nodes with 0 connections having a path length of 1
             else:
                 mean_path_lenght_pn.append(sum(path_length_per_node)/len(path_length_per_node))
-        mean_path_length=sum(mean_path_lenght_pn)/nodes_num
+        mean_path_length = sum(mean_path_lenght_pn)/nodes_num
             
-        return round(mean_path_length,15)				#needed to past test as the number producded has 16 dp
+        return round(mean_path_length, 15)				# needed to past test as the number produced has 16 dp
                         
     def make_random_network(self, N, connection_probability):
+
         '''
         This function makes a *random* network of size N.
         Each node is connected to each other node with probability p
@@ -160,7 +164,7 @@ class Network:
 
         self.nodes = []
         for node_number in range(N):
-            value = np.random.choice([1,-1],p=(0.5,0.5))
+            value = np.random.choice([1, -1], p=(0.5, 0.5))
             connections = [0 for _ in range(N)]
             self.nodes.append(Node(value, node_number, connections))
 
@@ -179,14 +183,16 @@ class Network:
         print("mean")
         #Your code for task 4 goes here
 
-    def ising_update(self,alpha):
+    def ising_update(self, alpha):
+
         '''
         function for updating a single node in the ising_network
         '''
-        random_index=random.randint(0,len(self.nodes)-1)
+
+        random_index = random.randint(0,len(self.nodes)-1)
         node = self.nodes[random_index]
         
-        neighbour_index_list=[i for (i,n) in enumerate(node.connections) if n == 1]
+        neighbour_index_list = [i for (i, n) in enumerate(node.connections) if n == 1]
         agreement = 0
         for neighbour_index in neighbour_index_list:
             agreement += node.value * self.nodes[neighbour_index].value
@@ -197,7 +203,7 @@ class Network:
             p = math.e ** (-agreement / alpha)
             node.value = np.random.choice([node.value,node.value*-1],p=(1-p,p))
         
-    def plot(self,ax=False):
+    def plot(self, ax=False):
         if not ax:
             fig = plt.figure()
             ax = fig.add_subplot(111)
@@ -226,35 +232,35 @@ class Network:
 
 def test_networks():
 
-    #Ring network
+    # Ring network
     nodes = []
     num_nodes = 10
     for node_number in range(num_nodes):
         connections = [0 for val in range(num_nodes)]
-        connections[(node_number-1)%num_nodes] = 1
-        connections[(node_number+1)%num_nodes] = 1
+        connections[(node_number-1) % num_nodes] = 1
+        connections[(node_number+1) % num_nodes] = 1
         new_node = Node(0, node_number, connections=connections)
         nodes.append(new_node)
     network = Network(nodes)
 
     print("Testing ring network")
-    assert(network.get_mean_degree()==2), network.get_mean_degree()
-    assert(network.get_mean_clustering()==0), network.get_mean_clustering()
-    assert(network.get_mean_path_length()==2.777777777777778), network.get_mean_path_length()
+    assert(network.get_mean_degree() == 2), network.get_mean_degree()
+    assert(network.get_mean_clustering() == 0), network.get_mean_clustering()
+    assert(network.get_mean_path_length() == 2.777777777777778), network.get_mean_path_length()
 
     nodes = []
     num_nodes = 10
     for node_number in range(num_nodes):
         connections = [0 for val in range(num_nodes)]
-        connections[(node_number+1)%num_nodes] = 1
+        connections[(node_number+1) % num_nodes] = 1
         new_node = Node(0, node_number, connections=connections)
         nodes.append(new_node)
     network = Network(nodes)
 
     print("Testing one-sided network")
-    assert(network.get_mean_degree()==1), network.get_mean_degree()
-    assert(network.get_mean_clustering()==0),  network.get_mean_clustering()
-    assert(network.get_mean_path_length()==5), network.get_mean_path_length()
+    assert(network.get_mean_degree() == 1), network.get_mean_degree()
+    assert(network.get_mean_clustering() == 0),  network.get_mean_clustering()
+    assert(network.get_mean_path_length() == 5), network.get_mean_path_length()
 
     nodes = []
     num_nodes = 10
@@ -266,9 +272,9 @@ def test_networks():
     network = Network(nodes)
 
     print("Testing fully connected network")
-    assert(network.get_mean_degree()==num_nodes-1), network.get_mean_degree()
-    assert(network.get_mean_clustering()==1),  network.get_mean_clustering()
-    assert(network.get_mean_path_length()==1), network.get_mean_path_length()
+    assert(network.get_mean_degree() == num_nodes-1), network.get_mean_degree()
+    assert(network.get_mean_clustering() == 1),  network.get_mean_clustering()
+    assert(network.get_mean_path_length() == 1), network.get_mean_path_length()
 
     print("All tests passed")
 
@@ -301,11 +307,14 @@ def calculate_agreement(population, row, col, external=0.0):
 
     return agreement
 
+
 # renew the ising model. Shows how External and alpha affect the Di/agreement value.
-def ising_step(population, alpha, external): # three input arguments control the p and agreement math function
+def ising_step(population, alpha, external):  # three input arguments control the p and agreement math function
+
     '''
     This function will perform a single update of the Ising model
     '''
+
     n_rows, n_cols = population.shape
     row = np.random.randint(0, n_rows)
     col = np.random.randint(0, n_cols)
@@ -326,13 +335,17 @@ def ising_step(population, alpha, external): # three input arguments control the
 
     return population
 
+
 def plot_ising(im, population):
+
     '''
     This function will display a plot of the Ising model
     '''
+
     new_im = np.array([[255 if val == -1 else 1 for val in rows] for rows in population], dtype=np.int8)
     im.set_data(new_im)
     plt.pause(0.1)
+
 
 # if the user does not set the alpha and external value, these will be assigned the input arguments
 def ising_main(population, alpha=None, external=0.0):
@@ -349,36 +362,36 @@ def ising_main(population, alpha=None, external=0.0):
         print('Step:', frame, end='\r')
         plot_ising(im, population)
 
+
 def test_ising(): # This function will test the calculate_agreement function in the Ising model
 
     print("Testing ising model calculations")
     population = -np.ones((3, 3))
-    assert(calculate_agreement(population,1,1)==4), "Test 1"
+    assert(calculate_agreement(population, 1, 1) == 4), "Test 1"
 
     population[1, 1] = 1.
-    assert(calculate_agreement(population,1,1)==-4), "Test 2"
+    assert(calculate_agreement(population, 1, 1) == -4), "Test 2"
 
     population[0, 1] = 1.
-    assert(calculate_agreement(population,1,1)==-2), "Test 3"
+    assert(calculate_agreement(population, 1, 1) == -2), "Test 3"
 
     population[1, 0] = 1.
-    assert(calculate_agreement(population,1,1)==0), "Test 4"
+    assert(calculate_agreement(population, 1, 1) == 0), "Test 4"
 
     population[2, 1] = 1.
-    assert(calculate_agreement(population,1,1)==2), "Test 5"
+    assert(calculate_agreement(population, 1, 1) == 2), "Test 5"
 
     population[1, 2] = 1.
-    assert(calculate_agreement(population,1,1)==4), "Test 6"
+    assert(calculate_agreement(population, 1, 1) == 4), "Test 6"
 
     "Testing external pull"
     population = -np.ones((3, 3))
-    assert(calculate_agreement(population,1,1,1)==3), "Test 7"
-    assert(calculate_agreement(population,1,1,-1)==5), "Test 8"
-    assert(calculate_agreement(population,1,1,10)==-6), "Test 9"
-    assert(calculate_agreement(population,1,1,-10)==14), "Test 10"
+    assert(calculate_agreement(population, 1, 1, 1) == 3), "Test 7"
+    assert(calculate_agreement(population, 1, 1, -1) == 5), "Test 8"
+    assert(calculate_agreement(population, 1, 1, 10) == -6), "Test 9"
+    assert(calculate_agreement(population, 1, 1, -10) == 14), "Test 10"
 
     print("Tests passed")
-
 
 
 def ising_main(population, alpha=None, external=0.0):
@@ -552,8 +565,8 @@ def main():
     parser = argparse.ArgumentParser(description='process the users_s input ')
     
     # flags for task_3 Network
-    parser.add_argument("-network",action="store",type=int,default=False)
-    parser.add_argument("-test_network",action="store_true",default=False)
+    parser.add_argument("-network", action="store", type=int, default=False)
+    parser.add_argument("-test_network", action="store_true", default=False)
 
     # adding four command-line parameter
     parser.add_argument('-ising_model', action='store_true')
@@ -572,15 +585,15 @@ def main():
     # flag for task_5
     parser.add_argument("-use_network", action="store",type=int, default=False)
     
-    args=parser.parse_args()
+    args = parser.parse_args()
     
     if args.network:
-        net=Network()
+        net = Network()
         print(args.network)
         net.make_random_network(args.network,0.5)
-        print("Mean degree:",net.get_mean_degree())
-        print("Mean path length:",net.get_mean_path_length())
-        print("Mean clustering co-efficient:",net.get_mean_clustering())
+        print("Mean degree:", net.get_mean_degree())
+        print("Mean path length:", net.get_mean_path_length())
+        print("Mean clustering co-efficient:", net.get_mean_clustering())
         net.plot()
         plt.show()
     if args.test_network:
@@ -591,9 +604,9 @@ def main():
     if args.test_defuant:
         test_defuant()
 
-    # if the user enter the ising_model or test_ising, running these two funtions
+    # if the user enter the ising_model or test_ising, running these two functions
     if args.ising_model:
-        #checks if ths ising_model is using a network or grid for representation
+        # checks if ths ising_model is using a network or grid for representation
         if args.use_network:
             fig = plt.figure()
             ax = fig.add_subplot(111)
@@ -614,5 +627,5 @@ def main():
         test_ising()
 
         
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
