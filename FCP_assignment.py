@@ -551,6 +551,7 @@ def test_defuant():
     for i in range(100):
         assert 1 >= list_of_rand_opinions[i] >= 0, "opinion out of range"
     print("passed opinion check")
+    print("All defuant tests passed")
 
 
 '''
