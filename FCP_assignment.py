@@ -552,12 +552,15 @@ def main():
     parser.add_argument("-time_step", type=int, default=100)
     parser.add_argument("-test_defuant", action="store_true", default=False)
 
+    #task 5
+    parser.add_argument("-use_network", action="store",type=int, default=False)
+    
     args=parser.parse_args()
     
     if args.network:
         net=Network()
         print(args.network)
-        net.make_random_network(args.network,0.3)
+        net.make_random_network(args.network,0.5)
         print("Mean degree:",net.get_mean_degree())
         print("Mean path length:",net.get_mean_path_length())
         print("Mean clustering co-efficient:",net.get_mean_clustering())
@@ -573,7 +576,14 @@ def main():
 
     # if the user enter the ising_model or test_ising, running these two funtions
     if args.ising_model:
-        ising_main(population, alpha=args.alpha, external=args.external)
+        if args.use_network:
+            ising_network = Network()
+            ising_network.make_random_network(args.use_network, 0.5)
+            ising_network.plot
+            plt.pause(0.1)
+            
+        else:
+            ising_main(population, alpha=args.alpha, external=args.external)
     if args.test_ising:
         test_ising()
 
