@@ -174,14 +174,13 @@ class Network:
                     node.connections[neighbour_index] = 1
                     self.nodes[neighbour_index].connections[index] = 1
             
-            
     def make_ring_network(self, N, neighbour_range=1):
         print("mean")
-        #Your code  for task 4 goes here
+        # Your code  for task 4 goes here
 
     def make_small_world_network(self, N, re_wire_prob=0.2):
         print("mean")
-        #Your code for task 4 goes here
+        # Your code for task 4 goes here
 
     def ising_update(self, alpha):
 
