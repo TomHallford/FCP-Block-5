@@ -5,7 +5,7 @@ FCP_assignment.py read me file
 Enter the folder containing FCP_assignment.py using git bash
 
 The Flags for the python file are as follows:
-=====task 1=====
+/n=====task 1=====
 -ising_model
 -test_ising
 -external
