@@ -29,5 +29,7 @@ The explination for each task function is as follows:
 =====task 2=====
 
 =====task 3=====
-
+Using the network flag followed by an integer will create a random network with that many nodes, the network will then be displayed and the terminal will output the mean degree, average pathl ength and the mean clustering co-efficient.
+Using the test network flag will run tests included in the code to verify the mean degree, average path length and mean clustering co-efficient are calculated correctly.
 =====task 5=====
+Use this flag followed by an integer after the main ising flag to run the ising model using a network. This will create a random network with a number of nodes equal to the integer put in, an animation will then play showing the ising model acting on the network. 
