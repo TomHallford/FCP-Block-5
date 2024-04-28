@@ -30,7 +30,7 @@ The explination for each task function is as follows:
 
 =====task 1=====
 
-###-ising_model flag be inputted on the terminal will play an animation for showing the ising_model. The value of external and alpha are defuant which be setted in 0 and 1.
+###-ising_model flag be inputted on the terminal will play an animation for showing the ising_model. The value of external and alpha are default which be setted in 0 and 1.
 
 ###-ising_model  follows one or two flags (-external) (-alpha). these two flags will affect the agreement function and create a new animation.
 
