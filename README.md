@@ -4,6 +4,9 @@ FCP_assignment.py read me file
 
 Enter the folder containing FCP_assignment.py using git bash
 
+IMPORTRANT Tips: Before Running the program, the user should import these libraries:
+--numpy, argparse, matplotlib.pyplot, matplotlib.cm, random, math--
+
 The Flags for the python file are as follows:
 =====task 1=====
 -ising_model
@@ -24,7 +27,18 @@ The Flags for the python file are as follows:
 -use_network
 
 The explination for each task function is as follows:
+
 =====task 1=====
+
+###-ising_model flag be inputted on the terminal will play an animation for showing the ising_model. The value of external and alpha are defuant which be setted in 0 and 1.
+
+###-ising_model  follows one or two flags (-external) (-alpha). these two flags will affect the agreement function and create a new animation.
+
+###-test_ising flag is used to test whether the agreement function is correct.    
+
+###-external and -alpha will follow two numbers, They will change value of external and alpha in the agreement function.
+
+
 
 =====task 2=====
 
