@@ -39,8 +39,14 @@ The explination for each task function is as follows:
 ###-external and -alpha will follow two numbers, They will change value of external and alpha in the agreement function.
 
 
-
 =====task 2=====
+
+-defuant flag activates the defuant model
+-test_defuant flag runs the test for defuant model
+-beta flag that when followed by a float between 0 and 1 changes the beta value
+-threshold flag that when followed by a float between 0 and 1 changes the threshold value
+-n_count flag when followed by an integer changes the amount of nieghbours
+-time_step flag when followed by an integer changes the length of time the model runs for
 
 =====task 3=====
 Using the network flag followed by an integer will create a random network with that many nodes, the network will then be displayed and the terminal will output the mean degree, average pathl ength and the mean clustering co-efficient.
