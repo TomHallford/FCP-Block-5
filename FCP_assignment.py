@@ -67,17 +67,20 @@ class Network:
         '''
 
         clustering_co = []
+        #loop for finding the clustering coefficent for each node
         for (index_l, node) in enumerate(self.nodes):
             neighbours = node.connections.count(1)
             possible_triangles = neighbours * (neighbours-1)/2
             if possible_triangles == 0:
                 continue
             temp_connections = []
+            #loop for creating a list of the nodes neighour indexes
             for (index_temp, connection) in enumerate(node.connections):
                 if connection == 1:
                     temp_connections.append(index_temp)
             connections = [i for i in temp_connections]      # Don't change this line, only solution that I found works
             total = 0
+            #loop for finding if nodes create a triangle
             for counting in connections:
                 index_m = temp_connections.pop(0)
                 for index_h in temp_connections:
@@ -120,10 +123,12 @@ class Network:
                     node_check = queue.pop()
                     if node_check == end_index:
                         break
+                    # finding all the indexes of the neghbours conencted to node being checked
                     neighbour_index = [i for i, n in enumerate(self.nodes[node_check].connections) if n ==1]
                     if neighbour_index == []:
                         break
                     else:
+                        # loop checking all potential movments and performing the appropriate action
                         for neighbour in neighbour_index:
                             if neighbour not in visited:
                                 queue.push(neighbour)
@@ -137,6 +142,7 @@ class Network:
                 check = self.nodes[end_index]
                 self.nodes[start_index].parent=None
                 rought = []
+                # using the paretns of nodes assighned in the search to find the path from the staring node to the end node
                 while check.parent != None:
                     rought.append(check.index)
                     temp = check
@@ -215,15 +221,15 @@ class Network:
         '''
         function for updating a single node in the ising_network
         '''
-
+        # chosing a random node
         random_index = random.randint(0,len(self.nodes)-1)
         node = self.nodes[random_index]
-        
+        # finding all indexes of neghbours
         neighbour_index_list = [i for (i, n) in enumerate(node.connections) if n == 1]
         agreement = 0
+        #for loop for finding the agreement
         for neighbour_index in neighbour_index_list:
             agreement += node.value * self.nodes[neighbour_index].value
-        
         if agreement <= 0:
             node.value *= -1
         elif agreement >0:
