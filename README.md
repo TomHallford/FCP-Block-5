@@ -55,4 +55,5 @@ Using the test network flag will run tests included in the code to verify the me
 Use this flag followed by an integer after the main ising flag to run the ising model using a network. This will create a random network with a number of nodes equal to the integer put in, an animation will then play showing the ising model acting on the network. 
 
 =====task 4=====
+
 The 'm_r_network' generates a ring network with N nodes. Each node is assigned a random value of 1 or -1 and connects to its neighbors within a set range.  The 'm_s_w_network' creates a ring network  then re-wires it to create a small world network. The rewiring process involves randomly selecting conections and reassigning them to create a new connection based on a specified probability. The main function utilizes argument parsing to take the users inputs for creating either a ring or a small world network. Depending on the user's choice, it makes the corresponding network, calculates and displays the mean path length, the mean degree, and the mean clustering coefficient of the network, and then plots the network.
