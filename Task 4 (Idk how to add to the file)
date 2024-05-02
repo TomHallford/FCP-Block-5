@@ -1,0 +1,76 @@
+# Sorry I'm not sure how to add to the existing file
+# Here's what I did
+
+class Network:
+
+
+    # making a ring network
+    def m_r_network(self, N, neighbour_range=1):
+        self.nodes = []  # empty list for nodes
+        for node_number in range(N):
+            value = np.random.choice([1, -1], p=(0.5, 0.5))  # Randomly assign a value of 1 or -1 to the node
+            connections = [0 for _ in range(N)]  # list of N zeros
+            self.nodes.append(Node(value, node_number, connections))  # new node that is added to the list of nodes
+
+        # Loop over the nodes and their indexes in the list of nodes
+        for (index, node) in enumerate(self.nodes):
+            # Loop over the neighbour indexes within the neighbour range
+            for neighbour_index in range(index-neighbour_range, index+neighbour_range+1):
+                if neighbour_index != index:
+                    node.connections[neighbour_index % N] = 1  #  connection to the neighbour node is set to 1 if the neighbour index is false
+                    self.nodes[neighbour_index % N].connections[index % N] = 1
+
+    #  making a small world network
+    def m_s_w_network(self, N, re_wire_prob=0.2):
+        self.m_r_network(N, 2)
+        for node in self.nodes:  # Loop over each node
+            for neighbour_index, connection in enumerate(node.connections):  # Loop over each connection and its index
+                # If the connection is 1 and a random number is less-than re-wire probability.
+                if connection == 1 and np.random.random() < re_wire_prob:
+                    node.connections[neighbour_index] = 0
+                    self.nodes[neighbour_index].connections[node.index] = 0
+                    while True:  # infinite loop
+                        new_neighbour_index = np.random.randint(N)  # a random index for a new neighbour is generated
+
+                        if new_neighbour_index != node.index and node.connections[new_neighbour_index] == 0:
+                            node.connections[new_neighbour_index] = 1  # Set the connection to the new neighbour to 1
+                            self.nodes[new_neighbour_index].connections[node.index] = 1
+                            break  # Break  infinite loop
+
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Process the user input')
+
+
+
+    # arguments for ring network, small world network , and re-wire probability
+    parser.add_argument("ring_network", type=int, default=False)
+    parser.add_argument("small_world", type=int, default=False)
+    parser.add_argument("re_wire", type=float, default=0.2)
+
+    args = parser.parse_args()
+
+
+    # If ring network argument is given
+    if args.ring_network:
+        net = Network()  # creating a new network
+        net.m_r_network(args.ring_network, 1)  # making a ring network
+        print("Mean degree:", net.get_mean_degree())
+        print("Mean path length:", net.get_mean_path_length())
+        print("Mean clustering co-efficient:", net.get_mean_clustering())
+        net.plot()  # plot network
+        plt.show()  # display plot
+
+    # If small world network argument is given
+    if args.small_world:
+        net = Network()  #create network
+        net.m_s_w_network(args.small_world, args.re_wire)  # making a small world network
+        print("Mean degree:", net.get_mean_degree())
+        print("Mean path length:", net.get_mean_path_length())
+        print("Mean clustering co-efficient:", net.get_mean_clustering())
+        net.plot()  # Plot network and display plot
+        plt.show()
+
+
+if __name__ == "__main__":
