@@ -23,6 +23,9 @@ The Flags for the python file are as follows:
 =====task 3=====
 -network
 -test_network
+=====task 4=====
+-ring_network
+-small_world
 =====task 5=====
 -use_network
 
