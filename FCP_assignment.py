@@ -155,7 +155,7 @@ class Network:
             
         return round(mean_path_length, 15)				# needed to past test as the number produced has 16 dp
                         
-    def make_random_network(self, N, connection_probability):
+    def make_random_network(self, N, connection_probability,ising=False):
 
         '''
         This function makes a *random* network of size N.
@@ -164,7 +164,10 @@ class Network:
 
         self.nodes = []
         for node_number in range(N):
-            value = np.random.choice([1, -1], p=(0.5, 0.5))
+            if ising:
+                value = np.random.choice([1, -1], p=(0.5, 0.5))
+            else:
+                value = np.random.random()
             connections = [0 for _ in range(N)]
             self.nodes.append(Node(value, node_number, connections))
 
@@ -227,7 +230,7 @@ class Network:
             p = math.e ** (-agreement / alpha)
             node.value = np.random.choice([node.value,node.value*-1],p=(1-p,p))
         
-    def plot(self, ax=False):
+    def plot(self,ising=False, ax=False):
         if not ax:
             fig = plt.figure()
             ax = fig.add_subplot(111)
@@ -241,8 +244,10 @@ class Network:
             node_angle = i * 2 * np.pi / num_nodes
             node_x = network_radius * np.cos(node_angle)
             node_y = network_radius * np.sin(node_angle)
-
-            circle = plt.Circle((node_x, node_y), 0.3*num_nodes, color=cm.Set1(node.value))
+            if ising:					#this is inluded as the hot colour map dose not show diffrent colours for -1 and 1 used in the ising model
+                circle = plt.Circle((node_x, node_y), 0.3*num_nodes, color=cm.Set1(node.value))
+            else:
+                circle = plt.Circle((node_x, node_y), 0.3*num_nodes, color=cm.hot(node.value))
             ax.add_patch(circle)
 
             for neighbour_index in range(i+1, num_nodes):
@@ -630,12 +635,12 @@ def main():
             ax.set_axis_off()
             plt.ion()
             ising_network = Network()
-            ising_network.make_random_network(args.use_network, 0.5)
-            ising_network.plot(ax)
+            ising_network.make_small_world_network(args.use_network, 0.5)
+            ising_network.plot(ising =True, ax=ax)
             plt.pause(0.1)
             for i in range(100):
                 ising_network.ising_update(args.alpha)
-                ising_network.plot(ax)
+                ising_network.plot(ising=True,ax=ax)
                 plt.pause(0.1)
             
         else:
